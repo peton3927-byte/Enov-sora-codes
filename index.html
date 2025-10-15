@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enov Clan — Sora Codes & Events</title>
+<style>
+  :root {
+    --accent: #7a3cff;
+    --dark: #0e0e16;
+    --card: #1b1b29;
+    --light: #ffffff;
+    --muted: #9ca3af;
+  }
+
+  * {margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+
+  body {
+    background: var(--dark);
+    color: var(--light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  header {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #3c82ff);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+  }
+
+  main {
+    width: 90%;
+    max-width: 900px;
+    background: var(--card);
+    margin-top: 2rem;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+
+  h2 {color: var(--accent);text-align:center;margin-bottom:1rem;}
+  h3 {color: var(--accent);margin-bottom:0.6rem;}
+  p {color: var(--muted);line-height:1.5;margin-bottom:1rem;}
+
+  input, textarea {
+    background: #1f1f2b;
+    border: 1px solid #2f2f44;
+    color: var(--light);
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    background: var(--accent);
+    color: var(--light);
+    border: none;
+    padding: 0.8rem 1.4rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {background:#3c82ff;}
+
+  .hidden {display:none;}
+  .logout {background:#ff3c7a;margin-top:1rem;}
+  .logout:hover {background:#ff5c9e;}
+</style>
+</head>
+<body>
+
+<header>💎 Enov Clan — Member Portal</header>
+
+<main>
+  <!-- LOGIN/REGISTER PAGE -->
+  <section id="authSection">
+    <h2>Sign In to Enov Clan</h2>
+    <p>Welcome! Please sign in or register to continue.</p>
+
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+
+    <button id="loginBtn">Sign In</button>
+    <button id="registerBtn" style="background:#3c82ff;">Register</button>
+  </section>
+
+  <!-- DASHBOARD PAGE -->
+  <section id="dashboard" class="hidden">
+    <h2>Welcome back, <span id="displayUser"></span> 👋</h2>
+
+    <div>
+      <h3>🎁 Request Your Free Sora Code</h3>
+      <p>Fill out the request form below. Once confirmed, it will be securely sent to the developer for review.</p>
+
+      <!-- Secure form (email hidden) -->
+      <form id="soraForm" action="https://formsubmit.co/ajax" method="POST">
+        <input type="hidden" name="_subject" value="New Sora Code Request - Enov Clan">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
+        <input type="text" name="Name" placeholder="Your Full Name" required>
+        <input type="email" name="Email" placeholder="Your Email Address" required>
+        <input type="text" name="Discord" placeholder="Your Discord Username (e.g. user#0001)" required>
+        <textarea name="Reason" rows="4" placeholder="Why do you want a Sora Code?" required></textarea>
+        <button type="submit">Submit Request</button>
+      </form>
+
+      <p id="formMessage" style="display:none;color:lime;margin-top:1rem;">✅ Request sent successfully!</p>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h3>📅 Events</h3>
+      <p>🎮 <b>Sora Tournament</b> — Oct 25, 2025<br>🔥 <b>Enov Anniversary</b> — Nov 2, 2025</p>
+    </div>
+
+    <button class="logout" id="logoutBtn">Log Out</button>
+  </section>
+</main>
+
+<footer style="margin-top:2rem;text-align:center;color:#9ca3af;">
+  © 2025 Enov Clan • All Rights Reserved
+</footer>
+
+<script>
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const authSection = document.getElementById('authSection');
+  const dashboard = document.getElementById('dashboard');
+  const displayUser = document.getElementById('displayUser');
+  const formMessage = document.getElementById('formMessage');
+
+  // Load saved login
+  const currentUser = localStorage.getItem('enovUser');
+  if (currentUser) showDashboard(currentUser);
+
+  registerBtn.onclick = () => {
+    const u = username.value.trim(), p = password.value.trim();
+    if (!u || !p) return alert("Enter username & password");
+    if (localStorage.getItem(`user_${u}`)) return alert("User already exists!");
+    localStorage.setItem(`user_${u}`, p);
+    alert("✅ Registered successfully!");
+  };
+
+  loginBtn.onclick = () => {
+    const u = username.value.trim(), p = password.value.trim();
+    const saved = localStorage.getItem(`user_${u}`);
+    if (saved && saved === p) {
+      localStorage.setItem("enovUser", u);
+      showDashboard(u);
+    } else alert("Incorrect credentials.");
+  };
+
+  logoutBtn.onclick = () => {
+    localStorage.removeItem("enovUser");
+    dashboard.classList.add("hidden");
+    authSection.classList.remove("hidden");
+  };
+
+  function showDashboard(user) {
+    displayUser.textContent = user;
+    authSection.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+  }
+
+  // Secure email sending via FormSubmit API (email hidden)
+  document.getElementById("soraForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await fetch("https://formsubmit.co/ajax/YOUR_SECURE_CODE_HERE", {
+      method: "POST",
+      body: formData
+    });
+    formMessage.style.display = "block";
+    e.target.reset();
+  });
+</script>
+
+</body>
+</html>
